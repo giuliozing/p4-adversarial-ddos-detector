@@ -27,9 +27,9 @@ The undefended model collapses to ~40% (EAD) / ~52% (Boundary) under attack, whi
 adversarially-trained detector stays **>98%** in gray-/black-box and **85–91%** under a
 white-box EAD attack.
 
-| | EAD (white-/gray-box) | Boundary (black-box) |
-|---|---|---|
-| With Adversarial Detector | ![EAD](docs/figures/EAD_adv_training.png) | ![Boundary](docs/figures/Boundary_adv_training.png) |
+| EAD (white-/gray-box) | Boundary (black-box) |
+|---|---|
+| ![EAD](docs/figures/EAD_adv_training.png) | ![Boundary](docs/figures/Boundary_adv_training.png) |
 
 Hardware validation on Tofino: software accuracy **81.24%** vs compiled-P4 **81.15%**
 on ~485k packets (≤0.1 pp deviation).
@@ -37,22 +37,19 @@ on ~485k packets (≤0.1 pp deviation).
 ## Repository structure
 
 ```
-modelliScript/        # DNN definitions (binary detector + randomized/adversarial variant)
-packetManagement/     # Edge-IIoTset feature extraction, csv <-> pcap conversion
-datiPerPaper/         # per-figure result curves (adversarial training, randomized, reduction)
-docs/figures/         # rendered result figures
-p4/                   # P4/Tofino data-plane pipeline — description (see p4/README.md)
-utils.py              # scaling / normalization helpers
-feature_selection.py  # chi-square feature ranking on Edge-IIoTset
-addestraModelloBinarioCompleto.py        # train the (quantized) detector
-EADAttack.py / EADArtScaler.py           # EAD white-box attack (foolbox / ART)
-boundaryAttack.py / boundaryART.py       # Boundary black-box attack (foolbox / ART)
-generateEADAdversarial.py                # craft the adversarial-training corpus
-convert*ToPcap.py / createDatasetFromPcap.py / AdversarialLookupFromPcap.py
-                      # consistent adversarial-packet generation + pcap reconstruction
-LUT*.py               # LUT distillation + software LUT simulator
-generaGraficiPaper.py / performancePlotter.py   # plotting
+models/            # DNN definitions (binary detector + randomized/adversarial variant)
+training/          # train the (quantized) detector
+attacks/           # EAD (foolbox/ART), Boundary (foolbox/ART), Gaussian-noise baseline
+lut/               # LUT distillation + software LUT simulator
+data_pipeline/     # Edge-IIoTset feature extraction, csv <-> pcap conversion,
+                   #   consistent adversarial-packet generation + pcap reconstruction
+analysis/          # chi-square feature selection, TCP-length analysis
+p4/                # P4/Tofino data-plane pipeline — description (see p4/README.md)
+docs/figures/      # rendered result figures
+utils.py           # scaling / normalization helpers
 ```
+
+Each code folder is a Python package; run scripts as modules from the repository root.
 
 ## Setup
 
@@ -64,42 +61,37 @@ pip install -r requirements.txt   # Python 3.10
 ## Data (not included)
 
 The Edge-IIoTset captures, serialized `.hkl` datasets, trained `.h5` models and the
-large LUT csv tables are **not committed**. Download Edge-IIoTset from its official
-source (Ferrag et al., 2022) and place the `DNN-EdgeIIoT-dataset.csv` under
+LUT csv tables are **not committed** (see `.gitignore`). Download Edge-IIoTset from its
+official source (Ferrag et al., 2022) and place the `DNN-EdgeIIoT-dataset.csv` under
 `Edge-IIoTset dataset/Selected dataset for ML and DL/` (the path expected by
-`feature_selection.py`), then regenerate artifacts with the workflow below.
+`analysis/feature_selection.py`), then regenerate artifacts with the workflow below.
 
-## Reproducing the paper
+## How to run
 
-### Figures from committed results (no GPU needed)
+Run every script **as a module, from the repository root**:
+
 ```bash
-python generaGraficiPaper.py     # EAD/Boundary curves: base vs adversarial-training defense
-```
-This reads the per-figure curves in `datiPerPaper/` (`*_adv_training.csv`,
-`*_randomized.csv`, `*_precision_reduction.csv`).
-
-### Full pipeline
-```bash
-python feature_selection.py                  # chi-square feature ranking
-python packetManagement/"Edge-IIoT extractor.py"   # build the feature dataset
-python addestraModelloBinarioCompleto.py     # train the Attack Detector
-python generateEADAdversarial.py             # craft EAD adversarial corpus (eps 0.25 / 0.5)
-python addestraModelloBinarioCompleto.py     # train the Adversarial Detector (adversarial training)
-python EADAttack.py                          # white-/gray-box evaluation
-python boundaryAttack.py                     # black-box evaluation
-python LUTOptimizedGenerator.py              # distil detectors into LUT tables for the switch
+python -m analysis.feature_selection           # chi-square feature ranking
+python -m data_pipeline.edge_iiot_extractor    # build the feature dataset
+python -m training.train_quantized             # train the Attack Detector
+python -m attacks.ead_generate                 # craft EAD adversarial corpus (eps 0.25 / 0.5)
+python -m training.train_quantized             # train the Adversarial Detector (adversarial training)
+python -m attacks.ead                          # white-/gray-box evaluation
+python -m attacks.boundary                     # black-box evaluation
+python -m lut.generate_lut_optimized           # distil detectors into LUT tables for the switch
 ```
 
-The consistent-adversarial-packet tooling (`convert*ToPcap.py`,
-`createDatasetFromPcap.py`, `AdversarialLookupFromPcap.py`) rebuilds protocol-valid
-`.pcap` traces from adversarial feature vectors, used for the Tofino hardware test.
+The consistent-adversarial-packet tooling in `data_pipeline/` (`adversarial_to_pcap.py`,
+`original_to_pcap.py`, `dataset_from_pcap.py`, `adversarial_lookup_from_pcap.py`)
+rebuilds protocol-valid `.pcap` traces from adversarial feature vectors, used for the
+Tofino hardware test. Data paths inside the scripts are relative to the repository root.
 
 ## P4 / Tofino data plane
 
 The switch-side P4 program (parser → LUT1/LUT2/LUT3 match-action tables → forwarding)
 is **not included** in this repository (it was developed/run on the Tofino testbed). See
 [`p4/README.md`](p4/README.md) for the pipeline description and the LUT entry format
-produced by `LUT*.py`.
+produced by the `lut/` scripts.
 
 ## Acknowledgements
 

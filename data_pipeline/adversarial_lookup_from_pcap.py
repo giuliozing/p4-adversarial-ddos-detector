@@ -6,11 +6,11 @@ print("Loading data from PCAP files...")
 
 # Load PCAP files
 print("\n1. Reading Edge-IIoT_normal.pcap...")
-packets_normal = rdpcap('packetManagement/Edge-IIoT_original.pcap')
+packets_normal = rdpcap('data/Edge-IIoT_original.pcap')
 print(f"   Normal packets loaded: {len(packets_normal)}")
 
 print("\n2. Reading Edge-IIoT_attack.pcap...")
-packets_attack = rdpcap('packetManagement/Edge-IIoT_adversarial.pcap')
+packets_attack = rdpcap('data/Edge-IIoT_adversarial.pcap')
 print(f"   Attack packets loaded: {len(packets_attack)}")
 
 # Extract features from packets

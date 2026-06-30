@@ -9,8 +9,7 @@ from art.estimators.classification import KerasClassifier
 from keras import backend as K
 
 # Importa il modulo con apply_randomization
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'modelliScript'))
-import new_nn_traffic_binary_randomized
+from models import traffic_nn_binary_randomized as new_nn_traffic_binary_randomized
 
 def f1_metric(y_true, y_pred):
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))

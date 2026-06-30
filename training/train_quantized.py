@@ -3,8 +3,8 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-import modelliScript.new_nn_traffic_binary_randomized as nn
-import modelliScript.single_lut_nn
+import models.traffic_nn_binary_randomized as nn
+import models.single_lut_nn
 from keras.utils import to_categorical
 import sklearn.feature_selection as fs
 import hickle as hkl

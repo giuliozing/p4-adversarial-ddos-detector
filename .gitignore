@@ -12,11 +12,10 @@ tmp/
 *.pcap
 *.pcapng
 *.pcapng.data
-# large look-up tables and raw adversarial dumps
-LUTbit*.csv
-LUT/LUTbit*.csv
-clipped_advs*.json
-raw_advs*.json
+# look-up tables, models, and raw result/adversarial dumps (regenerate, not committed)
+*.csv
+*.json
+*.xlsx
 *.h5
 
 # ---- Python ----
