@@ -1,0 +1,36 @@
+# ---- Secrets / credentials (NEVER commit) ----
+*.pem
+id_rsa*
+*.key
+
+# ---- Heavy data artifacts (regenerate or download, see README) ----
+data/
+data_preprocessed/
+modelliAddestrati/
+tmp/
+*.hkl
+*.pcap
+*.pcapng
+*.pcapng.data
+# large look-up tables and raw adversarial dumps
+LUTbit*.csv
+LUT/LUTbit*.csv
+clipped_advs*.json
+raw_advs*.json
+*.h5
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ---- Editor / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~$*

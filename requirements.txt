@@ -1,0 +1,31 @@
+# Tested with Python 3.10
+# Core scientific stack
+numpy
+pandas
+scipy
+scikit-learn
+imbalanced-learn
+matplotlib
+
+# Deep learning + quantization (DoReFa quantizer)
+tensorflow>=2.10,<2.16
+larq
+
+# Serialization / packet handling
+hickle
+scapy
+
+# Adversarial attack libraries
+foolbox            # EAD, Boundary, HopSkipJump, Pointwise attacks
+eagerpy            # tensor backend used by foolbox wrappers
+adversarial-robustness-toolbox   # ART variants (*ART*.py scripts)
+
+# Model visualization (optional, only for modelVisualiser.py)
+visualkeras
+
+# NOTE: FGSM.py, PGD.py, CW.py, deepDefendAttack.py and noiseTester.py import a
+# separate library `deepdefend` (deepdefend.attacks / deepdefend.defenses) that
+# is NOT on PyPI under a stable name. These scripts are kept for completeness but
+# the self-contained, reproducible attack scripts are the foolbox-/ART-based ones
+# (EADAttack.py, boundaryAttack.py, *ART*.py). Install deepdefend manually if you
+# need the FGSM/PGD/CW variants.
