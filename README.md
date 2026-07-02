@@ -40,7 +40,6 @@ on ~485k packets (≤0.1 pp deviation).
 models/            # DNN definitions (binary detector + randomized/adversarial variant)
 training/          # train the (quantized) detector
 attacks/           # EAD (foolbox/ART), Boundary (foolbox/ART), Gaussian-noise baseline
-lut/               # LUT distillation + software LUT simulator
 data_pipeline/     # Edge-IIoTset feature extraction, csv <-> pcap conversion,
                    #   consistent adversarial-packet generation + pcap reconstruction
 analysis/          # chi-square feature selection, TCP-length analysis
@@ -60,8 +59,8 @@ pip install -r requirements.txt   # Python 3.10
 
 ## Data (not included)
 
-The Edge-IIoTset captures, serialized `.hkl` datasets, trained `.h5` models and the
-LUT csv tables are **not committed** (see `.gitignore`). Download Edge-IIoTset from its
+The Edge-IIoTset captures, serialized `.hkl` datasets and trained `.h5` models are
+**not committed** (see `.gitignore`). Download Edge-IIoTset from its
 official source (Ferrag et al., 2022) and place the `DNN-EdgeIIoT-dataset.csv` under
 `Edge-IIoTset dataset/Selected dataset for ML and DL/` (the path expected by
 `analysis/feature_selection.py`), then regenerate artifacts with the workflow below.
@@ -78,7 +77,6 @@ python -m attacks.ead_generate                 # craft EAD adversarial corpus (e
 python -m training.train_quantized             # train the Adversarial Detector (adversarial training)
 python -m attacks.ead                          # white-/gray-box evaluation
 python -m attacks.boundary                     # black-box evaluation
-python -m lut.generate_lut_optimized           # distil detectors into LUT tables for the switch
 ```
 
 The consistent-adversarial-packet tooling in `data_pipeline/` (`adversarial_to_pcap.py`,
@@ -90,8 +88,7 @@ Tofino hardware test. Data paths inside the scripts are relative to the reposito
 
 The switch-side P4 program (parser → LUT1/LUT2/LUT3 match-action tables → forwarding)
 is **not included** in this repository (it was developed/run on the Tofino testbed). See
-[`p4/README.md`](p4/README.md) for the pipeline description and the LUT entry format
-produced by the `lut/` scripts.
+[`p4/README.md`](p4/README.md) for the pipeline description and the LUT entry format.
 
 ## Acknowledgements
 

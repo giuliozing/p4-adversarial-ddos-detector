@@ -2,7 +2,7 @@
 
 > The actual P4 source for the Intel Tofino was developed and executed on the
 > hardware testbed and is **not included** here. This document describes the pipeline
-> so the LUT tables produced by the Python `LUT*.py` scripts can be mapped to it.
+> at a conceptual level.
 
 ## Target
 
@@ -39,11 +39,10 @@ either flags it).
 
 ## LUT entry format
 
-All entries are derived **offline** from the trained Keras models by the LUT-distillation
-scripts in this repository (`LUTGenerator.py` / `LUTOptimizedGenerator.py`) and exported
-as CSV. Each row maps a compound input key to the table's output value; loading these
-rows into the corresponding P4 match-action table reproduces the DNN inference exactly
-(see the software cross-check in `LUTSimulator.py` / `LUTSimulatorCSV.py`).
+All entries are derived **offline** from the trained Keras models via LUT distillation
+and exported as CSV. Each row maps a compound input key to the table's output value;
+loading these rows into the corresponding P4 match-action table reproduces the DNN
+inference exactly.
 
 ## Measured performance (reference)
 
